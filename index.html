@@ -446,9 +446,16 @@ Current price: $${prices[selectedTicker].toFixed(2)}, Change: ${changes[selected
 ${holding?`User holds ${holding.shares} shares at avg $${holding.avgPrice.toFixed(2)}.`:'User does not hold this stock.'} Cash: $${cash.toFixed(2)}.
 Give BUY, SELL, or HOLD with brief reasoning. End with risk: LOW, MEDIUM, or HIGH.`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();txt.textContent=data.content?.find(b=>b.type==='text')?.text||'No analysis.';
-  }catch{txt.textContent='Failed to load analysis.';}
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const data=await res.json();
+    if(data.choices&&data.choices[0]&&data.choices[0].message){
+      txt.textContent=data.choices[0].message.content;
+    }else{
+      txt.textContent=data.error||'No analysis available.';
+    }
+  }catch(e){
+    txt.textContent='Failed to load analysis: '+e.message;
+  }
 }
 
 async function fetchAIPortfolio(){
@@ -460,9 +467,16 @@ async function fetchAIPortfolio(){
 Total: $${total.toFixed(2)} | Cash: $${cash.toFixed(2)} | P&L: ${pl>=0?'+':''}$${pl.toFixed(2)}
 Holdings: ${summary}. Available: ${Object.keys(STOCKS).join(', ')}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();txt.textContent=data.content?.find(b=>b.type==='text')?.text||'No suggestion.';
-  }catch{txt.textContent='Failed to load suggestion.';}
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const data=await res.json();
+    if(data.choices&&data.choices[0]&&data.choices[0].message){
+      txt.textContent=data.choices[0].message.content;
+    }else{
+      txt.textContent=data.error||'No suggestion available.';
+    }
+  }catch(e){
+    txt.textContent='Failed to load suggestion: '+e.message;
+  }
 }
 
 function showToast(msg,type='success'){
