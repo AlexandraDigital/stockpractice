@@ -446,8 +446,8 @@ Current price: $${prices[selectedTicker].toFixed(2)}, Change: ${changes[selected
 ${holding?`User holds ${holding.shares} shares at avg $${holding.avgPrice.toFixed(2)}.`:'User does not hold this stock.'} Cash: $${cash.toFixed(2)}.
 Give BUY, SELL, or HOLD with brief reasoning. End with risk: LOW, MEDIUM, or HIGH.`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();txt.textContent=data.content?.find(b=>b.type==='text')?.text||'No analysis.';
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${env.GROQ_API_KEY}`},body:JSON.stringify({model:'mixtral-8x7b-32768',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();txt.textContent=data.choices?.[0]?.message?.content||'No analysis.';
   }catch{txt.textContent='Failed to load analysis.';}
 }
 
@@ -460,8 +460,8 @@ async function fetchAIPortfolio(){
 Total: $${total.toFixed(2)} | Cash: $${cash.toFixed(2)} | P&L: ${pl>=0?'+':''}$${pl.toFixed(2)}
 Holdings: ${summary}. Available: ${Object.keys(STOCKS).join(', ')}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();txt.textContent=data.content?.find(b=>b.type==='text')?.text||'No suggestion.';
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${env.GROQ_API_KEY}`},body:JSON.stringify({model:'mixtral-8x7b-32768',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();txt.textContent=data.choices?.[0]?.message?.content||'No suggestion.';
   }catch{txt.textContent='Failed to load suggestion.';}
 }
 
