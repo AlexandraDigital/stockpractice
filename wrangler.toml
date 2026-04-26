@@ -1,0 +1,10 @@
+name = "stockpractice"
+main = "src/index.js"
+compatibility_date = "2024-04-01"
+
+[[routes]]
+pattern = "stockpractice.pages.dev/api/*"
+zone_name = "pages.dev"
+
+# Groq API key is stored securely using: wrangler secret put GROQ_API_KEY
+# Do NOT add it here!
